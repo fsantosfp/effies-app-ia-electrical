@@ -13,84 +13,113 @@ O objetivo deste projeto é oferecer uma API inteligente capaz de:
 - Buscar informações técnicas em normas e documentos específicos (ex: NBR 5410).
 - Auxiliar na tomada de decisão com explicações baseadas em boas práticas.
 
-A aplicação está sendo construída com foco em modularidade e escalabilidade, utilizando IA generativa (LLMs), busca semântica e ferramentas especializadas para cálculo.
+A aplicação está sendo construída com foco em modularidade e escalabilidade, utilizando IA generativa (LLMs) local através do Ollama.
 
 ---
 
 ## ⚙️ Tecnologias Utilizadas
 
-- **FastAPI** – API rápida e moderna em Python.
-- **LangChain** – Framework para agentes de IA.
-- **OpenAI GPT-4** – LLM principal via API.
-- **FAISS** – Busca semântica local baseada em vetores.
-- **Python 3.10+**
-- (Em breve) suporte a modelos locais com **Ollama**
+- **FastAPI** – API rápida e moderna em Python
+- **Ollama** – LLM local para processamento de linguagem natural
+- **Pydantic** – Validação de dados e configurações
+- **Python 3.11+**
+- **Requests** – Cliente HTTP para comunicação com Ollama
 
 ---
 
 ## 🖥️ Como Rodar o Projeto Localmente
 
-### 1. Clone o repositório
+### 1. Pré-requisitos
+
+- Python 3.11 ou superior
+- Ollama instalado e rodando localmente ([Instruções de instalação do Ollama](https://ollama.ai/))
+- Git
+
+### 2. Clone o repositório
 
 ```bash
 git clone https://github.com/fsantosfp/effies-app-ia-electrical.git
-
 cd effies-app-ia-electrical
 ```
 
-### 2. Crie e ative um ambiente virtual
+### 3. Crie e ative um ambiente virtual
 ```bash
 python -m venv venv
 
-venv\Scripts\activate  # Windows
-# ou
-source venv/bin/activate  # Linux/macOS
+# Windows (Git Bash)
+source venv/Scripts/activate
+
+# Linux/macOS
+source venv/bin/activate
 ```
 
-### 3. Instale as dependências
+### 4. Instale as dependências
 ```bash
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 4. Configure sua chave da OpenAI
-```env
-OPENAI_API_KEY=sk-sua-chave-aqui
-```
+### 5. Inicie o Ollama
+Certifique-se de que o Ollama está rodando localmente na porta padrão (11434)
 
-### 5. Execute a API
+### 6. Execute a API
 ```bash
-uvicorn app.main:app --reload
+uvicorn main:app --reload
 ```
 
-## 📁 Estrutura Inicial do Projeto
+## 🚀 Usando a API
+
+A API possui um endpoint principal para interação com o agente:
+
+### POST /ask
+Envie perguntas para o agente através deste endpoint:
+
+```json
+{
+  "agent": "assistant",
+  "message": "Sua pergunta sobre instalações elétricas aqui"
+}
+```
+
+Exemplo de uso:
+```bash
+curl -X POST "http://localhost:8000/ask" \
+     -H "Content-Type: application/json" \
+     -d '{"agent": "assistant", "message": "Quantas tomadas posso colocar em um circuito de 2,5mm?"}'
+```
+
+## 📁 Estrutura do Projeto
 ```
 agente-eletrica/
 │
 ├── app/
-│   └── main.py          # Ponto de entrada da API
+│   ├── agents/
+│   │   └── agent_selector.py    # Seleção de agentes especializados
+│   ├── core/
+│   │   └── agent.py            # Lógica principal do agente
+│   └── services/
+│       └── ollama_client.py    # Cliente para comunicação com Ollama
 │
-├── .env.example         # Exemplo de variáveis de ambiente
-├── .gitignore
-├── requirements.txt     # Dependências do projeto
+├── main.py                     # Ponto de entrada da API
+├── requirements.txt            # Dependências do projeto
 └── README.md
 ```
 
-## 📌 Roadmap Inicial
- - [x] Criação do repositório e documentação inicial
+## 📌 Roadmap
+- [x] Criação do repositório e documentação inicial
+- [x] Setup da API com FastAPI
+- [x] Integração com Ollama
+- [x] Sistema de seleção de agentes
+- [ ] Módulo de cálculos elétricos
+- [ ] Base de conhecimento técnico expandida
+- [ ] Interface Web ou Mobile (futura)
 
- - [ ] Setup da API com FastAPI
-
- - [ ] Configuração do agente LangChain
-
- - [ ] Módulo de cálculos elétricos
-
- - [ ] Base vetorial com conteúdo técnico (normas)
-
- - [ ] Interface Web ou Mobile (futura)
-
- ## 📄 Licença
+## 📄 Licença
 Este projeto está sob a licença MIT - veja o arquivo LICENSE para mais detalhes.
 
 ## 🤝 Contribuindo
 Se você deseja contribuir com melhorias ou novos módulos, fique à vontade para abrir uma issue ou enviar um pull request.
+
+## 🐛 Problemas Conhecidos
+- Certifique-se de que o Ollama está rodando localmente antes de iniciar a API
+- O modelo padrão usado é o gemma:7b, certifique-se de tê-lo baixado no Ollama
